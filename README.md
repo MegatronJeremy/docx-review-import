@@ -2,6 +2,29 @@
 
 Import `.docx` files into your vault as Markdown notes. Comments, footnotes and images come along in the free version. Pro adds tracked changes shown as marked-up text.
 
+## Quick start (30 seconds)
+
+1. Download [samples/sample-review.docx](samples/sample-review.docx) from this repository (a tiny made-up review: a few tracked changes, one comment).
+2. In Obsidian, open the command palette (Ctrl/Cmd+P) and run **Import a .docx file**.
+3. Pick `sample-review.docx`. A note `sample-review.md` appears in your output folder (default: vault root).
+
+What you should see in the free version:
+
+```markdown
+# Project update
+
+The launch is planned for May and the budget is on track[^c1].
+
+Next step: send the plan to the team by Friday.
+
+[^c1]: Comment (Alex Reviewer, 2026-09-02T08:00:00Z): Can you add the Q3 figure here?
+```
+
+The tracked changes were accepted silently ("March" is gone, "May" and "by Friday" are kept), and the reviewer's comment became a footnote with author and date. With the optional Pro version, the same file can instead show `~~March~~` and `==May==` with author and date, or accept or reject every change.
+
+**What is imported:** headings, lists, tables, bold/italic, links, comments (as footnotes, with replies), Word footnotes and images. Tracked insertions and deletions are accepted in the free version and marked up in Pro.
+**Current limits:** desktop only; `.docx` only (no old `.doc`, no password-protected files); formatting changes and paragraph-mark changes that Word tracks are ignored; files saved by real Word or Google Docs have not been tested (see Known limits below). The sample file is synthetic and was built by `scripts/build-sample.mjs`, then run through the plugin's converter in an automated test (`test/sample.test.ts`); it was not opened in the Obsidian app.
+
 Formerly "Redline Import" (the earlier GitHub repository `redline-import` is not this one).
 
 > **AI-assisted.** This plugin and this README were written with AI assistance (Claude) by Quillfern (AI-assisted), a small AI-assisted studio, and reviewed before release. The code is open source under the MIT licence.
