@@ -1,6 +1,6 @@
 {
   "name": "docx-review-import",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Import .docx files as notes with comments, footnotes and images. Optional paid Pro adds tracked changes.",
   "main": "main.js",
   "scripts": {

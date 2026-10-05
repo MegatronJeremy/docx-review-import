@@ -1,7 +1,7 @@
 {
   "id": "docx-review-import",
   "name": "DOCX Review Import",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "minAppVersion": "1.5.0",
   "description": "Import Word (.docx) files as notes with comments, footnotes and images. Optional paid Pro adds tracked changes.",
   "author": "Quillfern (AI-assisted)",

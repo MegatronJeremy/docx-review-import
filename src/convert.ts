@@ -152,8 +152,20 @@ function criticMarkup(md: string, byId: Map<number, Change>, comments: DocCommen
 
   const roots = comments.filter((c) => !c.parentId || !comments.some((x) => x.id === c.parentId));
   const rootIds = new Set(roots.map((c) => c.id));
+  // A reply to a reply (the file nests deeper than Word's one level) still belongs to its thread's root; a parent cycle is cut.
+  const rootOf = (c: DocComment): string => {
+    const seen = new Set<string>();
+    let cur = c;
+    while (cur.parentId && !seen.has(cur.id)) {
+      seen.add(cur.id);
+      const next = comments.find((x) => x.id === cur.parentId);
+      if (!next) break;
+      cur = next;
+    }
+    return cur.id;
+  };
   const thread = (root: DocComment) => {
-    const all = [root, ...comments.filter((c) => c.parentId === root.id)];
+    const all = [root, ...comments.filter((c) => c.id !== root.id && rootOf(c) === root.id)];
     used.push(...all);
     return all.map((c) => `{${prefix(c.author || "unknown", c.date)}>>${noAuthorPrefix(body(c.text.replace(/\s*\n\s*/g, " ")))}<<}`).join("");
   };

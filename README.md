@@ -52,6 +52,26 @@ If Pro doesn't work for you, or isn't what you expected, reply to your Gumroad r
 - **From the community directory**: not listed yet. This line will change only after the directory accepts the plugin.
 - **Manually**: download `main.js` and `manifest.json` from the latest GitHub release into `<your vault>/.obsidian/plugins/docx-review-import/`, then enable the plugin under Community plugins. Desktop only.
 
+## FAQ
+
+**How do I import a Word .docx into Obsidian as Markdown?**
+Run **Import a .docx file** from the command palette and pick one file, or **Import several .docx files** to pick up to 100 at once. The note is created in the output folder you set (default: vault root), and an existing note is never overwritten.
+
+**What happens to Word comments when I import a .docx?**
+In the free version, comments become footnotes named `[^c1]`, `[^c2]` and so on, with author and date, or CriticMarkup comments if you choose that style in settings. A reply says which comment it answers (this needs the reply information Word writes in `commentsExtended.xml`).
+
+**What happens to tracked changes (insertions and deletions)?**
+In the free version they are accepted silently: inserted text is kept, deleted text is dropped, with no markers. The optional Pro upgrade can instead mark them with author and date (plain Markdown or CriticMarkup), or accept all / reject all.
+
+**Does it keep footnotes and images?**
+Yes. Word footnotes become Markdown footnotes (`[^1]`), and images are saved as separate files in your attachments folder and linked from the note. Importing the same file twice saves the images again under new names.
+
+**Can I import many .docx files at once?**
+Yes, free: up to 100 per run. Each file is converted independently, a file that fails is reported while the rest continue, and files over 50 MB are skipped.
+
+**Does it export notes back to Word, or open old .doc and password-protected files?**
+No. It only imports .docx. Password-protected files and old .doc files are not supported.
+
 ## Known limits (honest status)
 
 - **Tracked changes:**
@@ -60,8 +80,8 @@ If Pro doesn't work for you, or isn't what you expected, reply to your Gumroad r
   - Changes inside text boxes are not handled.
   - In Mark mode, an insertion nested inside a deletion is shown as part of the deletion.
   - Moved text is shown as a deletion at the old place plus an insertion at the new place, not as a "move".
-- **Tests used synthetic files**: documents built by us for the tests, with invented reviewer names. **No file saved by Microsoft Word or LibreOffice was tested**, so real-world files may behave differently.
-- **Real-app testing: Obsidian 1.13.7 on Linux desktop, exact 0.2.0 build** (`main.js` sha256 b5b6d7ff…6eca, 35 automated tests pass), together with Track Changes 2.2.0 as the only other plugin. Plugin loads; free import (comments with a reply thread, footnote, image extraction, re-import with an image-name collision, whose link renders); batch import is free; Pro mark, accept and reject give correct output with **Pro forced on in the test setup, not unlocked with a real licence key**; Verify with an invalid key shows "Gumroad does not recognise this licence key." and saves nothing. With the CriticMarkup style, Track Changes showed the insertions and deletions as styled marks and the comment with its reply as one thread (panel header "1 comment · 4 suggestions"). Clicking accept/reject in Track Changes was not tested. The operating-system file picker was bypassed (the plugin's own import code ran, the dialog did not).
+- **Tests used synthetic files**: documents built by us for the tests, with invented reviewer names, including files built to mimic the structure of Google Docs and Word for the web exports (comments without reply information, threads with resolved flags, multi-paragraph comments, changes inside links). **No file actually saved by Microsoft Word, Word for the web, Google Docs or LibreOffice was tested**, so real-world files may behave differently.
+- **Real-app testing: Obsidian 1.13.7 on Linux desktop, exact 0.2.0 build** (0.2.1 changes only how CriticMarkup groups a reply to a reply, covered by automated tests, not re-run in the app) (`main.js` sha256 b5b6d7ff…6eca, 35 automated tests passed on that build; 44 pass on 0.2.1), together with Track Changes 2.2.0 as the only other plugin. Plugin loads; free import (comments with a reply thread, footnote, image extraction, re-import with an image-name collision, whose link renders); batch import is free; Pro mark, accept and reject give correct output with **Pro forced on in the test setup, not unlocked with a real licence key**; Verify with an invalid key shows "Gumroad does not recognise this licence key." and saves nothing. With the CriticMarkup style, Track Changes showed the insertions and deletions as styled marks and the comment with its reply as one thread (panel header "1 comment · 4 suggestions"). Clicking accept/reject in Track Changes was not tested. The operating-system file picker was bypassed (the plugin's own import code ran, the dialog did not).
 - **A valid licence key has not been verified against the live Gumroad service yet**; only the rejection of an invalid key was observed. The first buyers are that test: if your key does not verify, reply to your Gumroad receipt and the purchase is refunded in full.
 - Not tested on Windows, macOS or mobile (the plugin is desktop-only). The minimum Obsidian version, 1.5.0, is an estimate; only 1.13.7 was used (Track Changes itself needs Obsidian 1.13).
 - Password-protected files and old `.doc` files are not supported.
