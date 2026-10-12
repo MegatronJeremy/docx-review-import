@@ -53,9 +53,9 @@ describe("Word for the web-style file", () => {
     expect(comments.find((c) => c.id === "6")?.parentId).toBe("5");
     expect(comments.find((c) => c.id === "7")?.parentId).toBe("6");
     expect(md).toMatch(/Needs a source\. Second paragraph of the comment\./);
-    expect(md).toMatch(/\[\^c1\]: Comment \(Ida Reviewer/);
-    expect(md).toMatch(/\[\^c2\]: Comment \(reply to \[\^c1\], Hal Author/);
-    expect(md).toMatch(/\[\^c3\]: Comment \(reply to \[\^c2\], Ida Reviewer/);
+    expect(md).toMatch(/\[\^c1\]: Comment \(resolved, Ida Reviewer/);
+    expect(md).toMatch(/\[\^c2\]: Comment \(resolved, reply to \[\^c1\], Hal Author/);
+    expect(md).toMatch(/\[\^c3\]: Comment \(resolved, reply to \[\^c2\], Ida Reviewer/);
     expect(md).toMatch(/Inserted and commented/);
   });
   it("footnote reference inside an insertion", async () => {
@@ -78,5 +78,23 @@ describe("loose ends", () => {
     expect(md).toMatch(/Reference only\[\^c1\] then missing\./);
     expect(md).toMatch(/^\[\^c1\]: Comment \(unknown, [^)]*\): No author here\.$/m);
     expect(md).not.toMatch(/⟦|\[\^c2\]/);
+  });
+});
+
+describe("Google Docs export: counts and anchors (task_ab9f314f)", () => {
+  it("2 comments, 2 inserts, 1 delete; anchor text sits on the commented range", async () => {
+    const r = await run(await googleDocs());
+    expect(r.comments).toHaveLength(2);
+    expect(r.changes.filter((c) => c.type === "insert")).toHaveLength(2);
+    expect(r.changes.filter((c) => c.type === "delete")).toHaveLength(1);
+    expect(r.markdown).toMatch(/ship the beta\[\^c1\]\[\^c2\] soon/);
+  });
+  it("critic style keeps the same counts and anchors the comments on 'the beta'", async () => {
+    const r = await run(await googleDocs(), "mark", "critic");
+    expect(r.comments).toHaveLength(2);
+    expect(r.changes).toHaveLength(3);
+    expect(r.markdown).toMatch(/the beta/);
+    expect(r.markdown).toContain("Is the date firm?");
+    expect(r.markdown).toContain("Yes, end of month.");
   });
 });

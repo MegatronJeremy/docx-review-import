@@ -35,6 +35,20 @@ export interface ConvertResult {
 
 const td = new TurndownService({ headingStyle: "atx", bulletListMarker: "-", codeBlockStyle: "fenced" });
 td.keep(["sup", "sub"]);
+td.addRule("strike", { filter: ["s", "del", "strike"] as unknown as ["s"], replacement: (c) => (c.trim() ? `~~${c.trim()}~~` : "") });
+// Tables: mammoth emits <table><tr><td> (header rows become <thead> only when marked); write a GFM table, first row as header.
+td.addRule("table", {
+  filter: "table",
+  replacement: (_c, node) => {
+    const rows = Array.from((node as HTMLElement).querySelectorAll("tr")).map((tr) =>
+      Array.from(tr.children).map((cell) => td.turndown((cell as HTMLElement).innerHTML).trim().replace(/\n+/g, " <br> ").replace(/\|/g, "\\|")),
+    );
+    if (!rows.length) return "";
+    const n = Math.max(...rows.map((r) => r.length));
+    const line = (r: string[]) => `| ${Array.from({ length: n }, (_, i) => r[i] ?? "").join(" | ")} |`;
+    return `\n\n${line(rows[0])}\n| ${Array(n).fill("---").join(" | ")} |\n${rows.slice(1).map(line).join("\n")}\n\n`;
+  },
+});
 
 const toArrayBuffer = (u: Uint8Array): ArrayBuffer => u.buffer.slice(u.byteOffset, u.byteOffset + u.byteLength) as ArrayBuffer;
 const b64ToBytes = (b64: string): Uint8Array => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
@@ -112,7 +126,7 @@ function plainMarkup(md: string, byId: Map<number, Change>, comments: DocComment
   for (const c of used) {
     const who = safe(c.author) || "unknown";
     const reply = c.parentId ? `reply to [^${cLabel(c.parentId)}], ` : "";
-    defs.push(`[^${cLabel(c.id)}]: Comment (${reply}${who}${c.date ? ", " + safe(c.date) : ""}): ${c.text.replace(/\s*\n\s*/g, " ")}`);
+    defs.push(`[^${cLabel(c.id)}]: Comment (${c.resolved ? "resolved, " : ""}${reply}${who}${c.date ? ", " + safe(c.date) : ""}): ${c.text.replace(/\s*\n\s*/g, " ")}`);
   }
   return md.replace(STRAY, "");
 }
@@ -167,7 +181,7 @@ function criticMarkup(md: string, byId: Map<number, Change>, comments: DocCommen
   const thread = (root: DocComment) => {
     const all = [root, ...comments.filter((c) => c.id !== root.id && rootOf(c) === root.id)];
     used.push(...all);
-    return all.map((c) => `{${prefix(c.author || "unknown", c.date)}>>${noAuthorPrefix(body(c.text.replace(/\s*\n\s*/g, " ")))}<<}`).join("");
+    return all.map((c) => `{${prefix(c.author || "unknown", c.date)}>>${c.resolved ? "[resolved] " : ""}${noAuthorPrefix(body(c.text.replace(/\s*\n\s*/g, " ")))}<<}`).join("");
   };
   // Replies share their parent's range; drop their sentinels so only the root's range anchors the thread.
   md = md.replace(/⟦\/?CMS(\d+)⟧/g, (m: string, id: string) => (withComments && rootIds.has(id) ? m : ""));

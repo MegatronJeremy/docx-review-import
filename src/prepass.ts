@@ -21,6 +21,8 @@ export interface DocComment {
   text: string;
   /** id of the comment this one replies to, when the file says so. */
   parentId?: string;
+  /** Word's "Resolve" flag (w15:done) on the thread. */
+  resolved?: boolean;
 }
 
 const W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
@@ -172,6 +174,7 @@ export async function readComments(zip: JSZip): Promise<DocComment[]> {
       const pid = parent ? paraIdOf.get(parent) : undefined;
       const mine = out.find((c) => c.id === self);
       if (mine && pid) mine.parentId = pid;
+      if (mine && e.getAttributeNS(W15, "done") === "1") mine.resolved = true;
     }
   }
   return out;

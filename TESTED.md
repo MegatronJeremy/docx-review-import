@@ -1,4 +1,14 @@
-# DOCX Review Import 0.2.1: test record (public copy)
+# DOCX Review Import 0.2.2: test record (public copy)
+
+## Version 0.2.2 (2026-10-12)
+- Changes: tables now import as Markdown tables (before, every cell became its own paragraph); strikethrough imports as `~~text~~`; comments marked resolved in Word are labelled "Comment (resolved, ...)" in footnote style and prefixed "[resolved] " in CriticMarkup style (before, the resolved state was not shown). New tests: test/tables-images.test.ts (5), test/multi-author.test.ts (2, three reviewers, reply nesting, resolved).
+- Automated checks on this source (run_product_checks, 2026-10-12): typecheck PASS, 56 tests in 9 files PASS, production build PASS. main.js contains no `createElement("script")`.
+- Release build 0.2.2: main.js sha256 b88f00e468ca8b9d1819d58122f50dd04adfcfe3af8fc76e37c1e66a5a69131c; manifest.json sha256 7d2dc0f432dd4b1572e4a48896bac9c14bdbd062e67dd38f166998d8f9b85c56 (version 0.2.2).
+- Not re-run in the real Obsidian app: the real-app run below was on the 0.2.0 build. The changes above are covered by automated tests on synthetic files only; no file saved by Word was tested.
+
+---
+
+Earlier record (0.2.1):
 
 Earlier build (0.2.0 release), the one used for the real-Obsidian run below:
 - main.js sha256 b5b6d7ff28495a3b6f1002cb61e14aed33f983b697dc58353653d6ee2db26eca
@@ -15,7 +25,7 @@ Google Docs / Word for the web round-trip fixtures (2026-10-05, test/fixture-hos
 - Word for the web style: paraIds and commentsExtended with resolved flags, people.xml, a multi-paragraph comment, a comment range across two paragraphs, a reply to a reply, a formatting change (kept as text, change ignored), a paragraph-mark deletion (the two paragraphs are merged in every mode), deletion and insertion inside a hyperlink (marks appear inside the link text), a footnote reference inside an insertion, an insertion carrying a comment.
 - Loose ends: comment with no range and no author, reference to a comment that does not exist.
 - **Bug found and fixed:** in CriticMarkup style, a reply to a reply (the comment file nests one level deeper than Word normally writes) was silently dropped; it now joins the thread of its root comment. Plain style was not affected. Test: "multi-paragraph comment, threads ... (also reply-to-reply)" and the critic test in hosted.test.ts.
-- Resolved ("done") comments are imported like open ones; the resolved flag is not shown.
+- (0.2.1 behaviour; changed in 0.2.2) Resolved ("done") comments were imported like open ones, with the resolved flag not shown.
 
 Automated checks on 0.2.0 (2026-10-04; on 0.2.1: typecheck PASS, 44 tests PASS, build PASS, 2026-10-05): typecheck PASS, 35 tests in 5 files PASS (vitest), production build PASS. main.js contains no `createElement("script")`, no `eval(` and no `new Function`; the build fails if the patched dynamic-code spots in dependencies disappear. The licence notices of the bundled libraries are in a comment at the top of main.js.
 

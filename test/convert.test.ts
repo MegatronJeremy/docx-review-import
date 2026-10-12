@@ -51,6 +51,14 @@ describe("tracked changes", () => {
     const d = await buildDocx(`<w:p><w:ins w:id="1" w:author="Ann" w:date="2026-09-01T00:00:00Z"><w:r><w:rPr><w:b/></w:rPr><w:t>strong</w:t></w:r></w:ins></w:p>`);
     expect((await run(d)).markdown).toMatch(/==\*\*strong\*\*== <!-- insert: Ann/);
   });
+  it("an empty document converts to empty markdown without errors, in every mode", async () => {
+    const d = await buildDocx("");
+    for (const mode of ["mark", "accept", "reject"] as const) {
+      const { markdown, changes } = await run(d, mode);
+      expect(markdown.trim()).toBe("");
+      expect(changes).toHaveLength(0);
+    }
+  });
   it("a document without tracked changes is unchanged", async () => {
     const { markdown, changes } = await run(await buildDocx(`<w:p><w:r><w:t>Hello</w:t></w:r></w:p>`));
     expect(markdown.trim()).toBe("Hello");
